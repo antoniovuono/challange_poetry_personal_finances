@@ -12,10 +12,19 @@ def data_info(df):
     df.info()
     print("\n Quantidades de dados nulos por categoria:")
     print(df.isnull().sum())
+    print("\n Valores únicos por categorias:")
+    print(df["categoria"].unique())
+    print("\n Valores negativos ou zero:")
+    print(df[df['valor'] <= 0].shape[0])
+    print("\n Data inválidas:")
+    print(pd.to_datetime(df["data"], errors="coerce").isnull().sum())
+    print("\n Dados duplicados:")
+    print(df.duplicated().sum())
 
 # Limpeza:
-# 1. Categorias: 59 dados nulos. (Modificar para outros... )
-# 2. Categorias: Padronizar formatos dos dados.
+# 1. Categoria: 59 dados nulos. (Modificar para outros... )
+# 2. Categoria: Padronizar formatos dos dados.
+# 3. Data: Padronizar formatos dos dados. Alimentação/alimentação
 
 def main():
     file_path = "data/despesas_pessoais.csv"
