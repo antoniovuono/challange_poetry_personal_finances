@@ -20,11 +20,23 @@ def data_info(df):
     print(pd.to_datetime(df["data"], errors="coerce").isnull().sum())
     print("\n Dados duplicados:")
     print(df.duplicated().sum())
+    
 
 # Limpeza:
 # 1. Categoria: 59 dados nulos. (Modificar para outros... )
 # 2. Categoria: Padronizar formatos dos dados.
 # 3. Data: Padronizar formatos dos dados. Alimentação/alimentação
+
+# def clean_data(df):
+#     df['categoria'] = df['categoria'].replace({
+#         "alimentação": "Alimentação",
+#         "transporte": "Transporte",
+#         "saúde": "Saúde",
+#         "lazer": "Lazer",
+#         "educação": "Educação",
+#         "moradia": "Moradia",
+#         "outros": "Outros"
+#     })
 
 def main():
     file_path = "data/despesas_pessoais.csv"
