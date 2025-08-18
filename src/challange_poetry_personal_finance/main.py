@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def load_data(path):
     df = pd.read_csv(path)
@@ -21,27 +22,65 @@ def data_info(df):
     print("\n Dados duplicados:")
     print(df.duplicated().sum())
     
+def clean_category(df): 
+    # Remove espaços em branco e padroniza para capitalização (Primeira letra maiúscula)
+    df['categoria'] = df['categoria'].str.strip().str.capitalize()
+    # Ajustar categorias incorretas ou inconsistentes
+    df['categoria'] = df['categoria'].replace({
+        'transporte': 'Transporte',
+        'alimentacao': 'Alimentação',
+        None: 'Outros',
+    })
+    return df
 
-# Limpeza:
-# 1. Categoria: 59 dados nulos. (Modificar para outros... )
-# 2. Categoria: Padronizar formatos dos dados.
-# 3. Data: Padronizar formatos dos dados. Alimentação/alimentação
+def clean_date(df): 
+    # converter a coluna data para o formato datetime
+    df['data'] = pd.to_datetime(df['data'], errors='coerce')
+    return df
 
-# def clean_data(df):
-#     df['categoria'] = df['categoria'].replace({
-#         "alimentação": "Alimentação",
-#         "transporte": "Transporte",
-#         "saúde": "Saúde",
-#         "lazer": "Lazer",
-#         "educação": "Educação",
-#         "moradia": "Moradia",
-#         "outros": "Outros"
-#     })
+def drop_duplicates(df):
+    df = df.drop_duplicates()
+    return df
+
+def statatics(df): 
+    print(f"\n💰 Total gasto: R$ {df['valor'].sum():,.2f}")
+    print(f"📈 Maior despesa: R$ {df['valor'].max():.2f}")
+    print(f"📉 Menor despesa: R$ {df['valor'].min():.2f}")
+    print(f"📊 Média de despesa: R$ {df['valor'].mean():.2f}")
+
+def resume_per_category(df):
+    resumo = df.groupby("categoria")["valor"].sum().sort_values(ascending=False)
+    print("\nGastos por categoria:")
+    print(resumo)
+
+def resumo_por_mes(df):
+    df["mes"] = df["data"].dt.to_period("M")  # Ex: 2025-08
+    resumo = df.groupby("mes")["valor"].sum()
+    print("\nGastos por mês:")
+    print(resumo)
+
+def grafico_categoria(df):
+    resumo = df.groupby("categoria")["valor"].sum()
+    resumo.plot.pie(autopct="%1.1f%%", figsize=(6, 6))
+    plt.title("Distribuição dos gastos por categoria")
+    plt.ylabel("")
+    plt.tight_layout()
+    plt.show()
 
 def main():
     file_path = "data/despesas_pessoais.csv"
     df = load_data(file_path)
     data_info(df)
+    df = clean_category(df)
+    df = clean_date(df)
+    df = drop_duplicates(df)
+
+    statatics(df)
+    resume_per_category(df)
+    resumo_por_mes(df)
+    grafico_categoria(df)
+
+    df.to_csv("data/despesas_limpo")
 
 if __name__ == "__main__":
     main()
